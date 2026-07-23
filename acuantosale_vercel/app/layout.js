@@ -2,7 +2,7 @@ import './globals.css'
 
 export const metadata = {
   title: 'A Cuánto Sale',
-  description: 'Compara precios en Farmatodo, Locatel y Gama · Bs y $ al tipo de cambio BCV',
+  description: 'Comparador de precios de grandes cadenas venezolanas · Bs y $ al tipo de cambio BCV',
 }
 
 export default function RootLayout({ children }) {
