@@ -15,11 +15,11 @@ export default function ProductCard({ product, bcvRate }) {
   const [imgError, setImgError] = useState(!imageUrl)
 
   // Gama sends prices in USD (REF = $) — convert to Bs; other stores send Bs directly
-  const priceBs    = priceUsd    != null ? (bcvRate ? priceUsd    * bcvRate : null) : rawPriceBs
-  const fullPriceBs = fullPriceUsd != null ? (bcvRate ? fullPriceUsd * bcvRate : null) : rawFullPriceBs
+  const priceBs     = priceUsd    != null ? (bcvRate ? priceUsd    * bcvRate : 0) : rawPriceBs
+  const fullPriceBs = fullPriceUsd != null ? (bcvRate ? fullPriceUsd * bcvRate : 0) : rawFullPriceBs
 
   const isDiscounted = priceBs > 0 && fullPriceBs > 0 && priceBs < fullPriceBs
-  const usdFinal = priceUsd    ?? (bcvRate && priceBs    ? priceBs    / bcvRate : null)
+  const usdFinal = priceUsd    != null ? priceUsd    : (bcvRate && priceBs    ? priceBs    / bcvRate : null)
   const usdFull  = (fullPriceUsd != null && isDiscounted)
     ? fullPriceUsd
     : (bcvRate && fullPriceBs && isDiscounted ? fullPriceBs / bcvRate : null)
