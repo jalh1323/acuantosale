@@ -66,13 +66,13 @@ export async function POST(request) {
     const products = (raw?.results ?? []).map(p => {
       const mv          = p.masterVariant
       const price       = mv?.prices?.[0]
-      const centAmount  = price?.discounted?.value?.centAmount ?? price?.value?.centAmount ?? 0
-      const fullCents   = price?.value?.centAmount ?? 0
+      const centAmount  = price?.discounted?.value?.centAmount ?? price?.value?.centAmount ?? null
+      const fullCents   = price?.value?.centAmount ?? null
       return {
         id:          p.id,
         name:        p.name?.es ?? '',
-        priceUsd:    centAmount / 100,
-        fullPriceUsd: fullCents / 100,
+        priceUsd:    centAmount != null ? centAmount / 100 : null,
+        fullPriceUsd: fullCents != null ? fullCents / 100 : null,
         imageUrl:    mv?.images?.[0]?.url ?? '',
         inStock:     mv?.availability?.isOnStock ?? true,
       }
