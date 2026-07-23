@@ -9,7 +9,7 @@ const TABS = ['FTD', 'LCT', 'GMA', 'LVB']
 // ── Relevance filter ─────────────────────────────────────────────────────────
 
 function toPlain(str) {
-  return str.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, '')
+  return str.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/[^a-z0-9\s]/g, '')
 }
 
 function stemEs(word) {
@@ -221,7 +221,10 @@ export default function Home() {
         searchLuvebras(q, 1),
       ])
 
-      if (gen !== searchGenRef.current) return // respuesta obsoleta, ignorar
+      if (gen !== searchGenRef.current) {
+        setFtLoading(false); setLtLoading(false); setGmLoading(false); setLvLoading(false)
+        return
+      }
 
       if (ftData.status === 'fulfilled') {
         const r = ftData.value.results?.[0]
@@ -262,8 +265,8 @@ export default function Home() {
           const seen = new Set(prev.map(p => p.id))
           return [...prev, ...normalizeLocatel(data.products).filter(p => !seen.has(p.id))]
         })
-        ltPageRef.current = next
       }
+      ltPageRef.current = next
     } catch (e) { console.error(e) }
     setLtLoadingMore(false)
   }
