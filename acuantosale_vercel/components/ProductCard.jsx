@@ -15,8 +15,8 @@ export default function ProductCard({ product, bcvRate }) {
   const [imgError, setImgError] = useState(!imageUrl)
 
   // Gama sends prices in USD (REF = $) — convert to Bs; other stores send Bs directly
-  const priceBs     = priceUsd    != null ? (bcvRate ? priceUsd    * bcvRate : 0) : rawPriceBs
-  const fullPriceBs = fullPriceUsd != null ? (bcvRate ? fullPriceUsd * bcvRate : 0) : rawFullPriceBs
+  const priceBs     = priceUsd    != null ? (bcvRate ? priceUsd    * bcvRate : null) : rawPriceBs
+  const fullPriceBs = fullPriceUsd != null ? (bcvRate ? fullPriceUsd * bcvRate : null) : rawFullPriceBs
 
   const isDiscounted = priceBs > 0 && fullPriceBs > 0 && priceBs < fullPriceBs
   const usdFinal = priceUsd    != null ? priceUsd    : (bcvRate && priceBs    ? priceBs    / bcvRate : null)
@@ -66,13 +66,15 @@ export default function ProductCard({ product, bcvRate }) {
         <div className="mt-2">
           {isDiscounted && (
             <div className="flex items-center gap-2 text-xs text-gray-400">
-              <span className="line-through">Bs {formatBs(fullPriceBs)}</span>
+              {fullPriceBs != null && <span className="line-through">Bs {formatBs(fullPriceBs)}</span>}
               {usdFull && <span className="line-through">${formatUsd(usdFull)}</span>}
             </div>
           )}
-          <p className={`font-bold text-base leading-tight ${isDiscounted ? 'text-red-600' : 'text-gray-800'}`}>
-            Bs {formatBs(priceBs)}
-          </p>
+          {priceBs != null && (
+            <p className={`font-bold text-base leading-tight ${isDiscounted ? 'text-red-600' : 'text-gray-800'}`}>
+              Bs {formatBs(priceBs)}
+            </p>
+          )}
           {usdFinal && (
             <p className={`font-bold text-sm ${s?.priceColor ?? 'text-gray-600'}`}>
               ${formatUsd(usdFinal)}
