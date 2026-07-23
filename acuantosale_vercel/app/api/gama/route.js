@@ -34,6 +34,7 @@ function mapProduct(p) {
 async function searchWarehouse(query, page, pageSize, warehouse) {
   const url = `${GAMA_BASE}?fields=${FIELDS}&query=${encodeURIComponent(query)}&pageSize=${pageSize}&currentPage=${page}&lang=es&curr=REF&warehouse=${warehouse}`
   const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(8000) })
+  if (!res.ok) throw new Error(`Gama ${warehouse} HTTP ${res.status}`)
   return res.json()
 }
 
@@ -61,6 +62,7 @@ export async function POST(request) {
 
       for (const p of data.products ?? []) {
         const mapped = mapProduct(p)
+        if (!mapped.code) continue
         if (!seen.has(mapped.code)) {
           seen.set(mapped.code, mapped)
         } else {
