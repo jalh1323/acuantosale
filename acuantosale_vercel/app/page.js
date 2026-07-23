@@ -44,7 +44,7 @@ function normalizeFarmatodo(hits) {
     }
     return {
       id: p.objectID,
-      name: p.mediaDescription,
+      name: p.mediaDescription ?? '',
       brand: p.marca,
       imageUrl: p.mediaImageUrl,
       priceBs,
@@ -255,11 +255,13 @@ export default function Home() {
   useEffect(() => { handleSearch(query) }, [query, handleSearch])
 
   const loadMoreLocatel = async () => {
-    if (!query.trim()) return
+    const q = query
+    if (!q.trim()) return
     const next = ltPageRef.current + 1
     setLtLoadingMore(true)
     try {
-      const data = await searchLocatel(query, next)
+      const data = await searchLocatel(q, next)
+      if (query !== q) return
       if (data.products) {
         setLtResults(prev => {
           const seen = new Set(prev.map(p => p.id))
@@ -271,13 +273,14 @@ export default function Home() {
     setLtLoadingMore(false)
   }
 
-
   const loadMoreLuvebras = async () => {
-    if (!query.trim()) return
+    const q = query
+    if (!q.trim()) return
     const next = lvPageRef.current + 1
     setLvLoadingMore(true)
     try {
-      const data = await searchLuvebras(query, next)
+      const data = await searchLuvebras(q, next)
+      if (query !== q) return
       if (data.products) {
         setLvResults(prev => {
           const seen = new Set(prev.map(p => p.id))
@@ -290,11 +293,13 @@ export default function Home() {
   }
 
   const loadMoreGama = async () => {
-    if (!query.trim()) return
+    const q = query
+    if (!q.trim()) return
     const next = gmPageRef.current + 1
     setGmLoadingMore(true)
     try {
-      const data = await searchGama(query, next)
+      const data = await searchGama(q, next)
+      if (query !== q) return
       if (data.products) {
         setGmResults(prev => {
           const seen = new Set(prev.map(p => p.id))
