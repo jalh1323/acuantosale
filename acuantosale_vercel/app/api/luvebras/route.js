@@ -13,6 +13,7 @@ query SearchProducts($data: SearchProductsInput) {
       masterVariant {
         availability { isOnStock }
         prices {
+          channel { id }
           value { centAmount currencyCode }
           discounted { value { centAmount } }
         }
@@ -65,7 +66,8 @@ export async function POST(request) {
 
     const products = (raw?.results ?? []).map(p => {
       const mv          = p.masterVariant
-      const price       = mv?.prices?.[0]
+      // One price per store (channel), and they differ — pick ours, not whichever comes first
+      const price       = mv?.prices?.find(pr => pr.channel?.id === STORE_ID) ?? mv?.prices?.[0]
       const centAmount  = price?.discounted?.value?.centAmount ?? price?.value?.centAmount ?? null
       const fullCents   = price?.value?.centAmount ?? null
       return {
