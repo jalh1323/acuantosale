@@ -10,22 +10,29 @@ const HEADERS = {
   'Referer':    'https://gamaenlinea.com/',
 }
 
+// Handles "Ref.1.234,56" (dot = thousands, comma = decimals)
 function parseRef(str) {
   if (!str) return null
-  const n = parseFloat(str.replace('Ref.', '').replace(',', '.').trim())
+  const n = parseFloat(str.replace('Ref.', '').replace(/\./g, '').replace(',', '.').trim())
   return isNaN(n) ? null : n
 }
 
+// Gama price fields:
+//   totalWithVatPrice / price  → final price, IVA included, discount already applied
+//   totalPriceWithNoDiscount   → pre-discount price with IVA (only present on promos)
+//   basePriceWithDiscount      → taxable base WITHOUT IVA — never show this to users
+// Exempt products (food, medicines) have zero tax, so the totals already equal the base.
 function mapProduct(p) {
   const img = p.images?.find(i => i.format === 'product' && i.imageType === 'PRIMARY')
     ?? p.images?.find(i => i.imageType === 'PRIMARY')
-  const regularPrice    = p.price?.value ?? 0
-  const discountedPrice = parseRef(p.basePriceWithDiscount?.formattedValue)
+  const finalPrice   = p.totalWithVatPrice?.value ?? p.price?.value ?? 0
+  const noDiscount   = parseRef(p.totalPriceWithNoDiscount?.formattedValue)
+  const hasDiscount  = noDiscount !== null && noDiscount > finalPrice
   return {
     code:            p.code,
     name:            p.name ?? '',
-    regularPrice,
-    discountedPrice: discountedPrice !== null && discountedPrice < regularPrice ? discountedPrice : null,
+    regularPrice:    hasDiscount ? noDiscount : finalPrice,
+    discountedPrice: hasDiscount ? finalPrice : null,
     imageUrl:        img ? `https://egb2c.cl94ncbhsi-excelsior1-p1-public.model-t.cc.commerce.ondemand.com${img.url}` : '',
     inStock:         p.stock?.stockLevelStatus === 'inStock',
   }

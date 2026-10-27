@@ -91,12 +91,13 @@ function normalizeGama(products) {
 }
 
 function normalizeLocatel(products) {
-  const IVA = 1.16
   return (products ?? []).map(p => {
     const item = p.items?.[0]
     const offer = item?.sellers?.[0]?.commertialOffer
-    const listPrice = (offer?.ListPrice ?? 0) * IVA
-    const price = (offer?.Price ?? 0) * IVA
+    // Per-product rate (0.16 or 0 for exempt items), rounded to avoid 0.1600017-style noise
+    const iva = 1 + Math.round((offer?.taxPercentage ?? 0) * 100) / 100
+    const listPrice = (offer?.ListPrice ?? 0) * iva
+    const price = (offer?.Price ?? 0) * iva
     return {
       id: `locatel_${p.productId}`,
       name: p.productName,

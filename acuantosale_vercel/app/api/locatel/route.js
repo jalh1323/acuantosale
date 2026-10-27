@@ -32,6 +32,8 @@ export async function POST(request) {
           commertialOffer: {
             Price:     s.commertialOffer?.Price     ?? 0,
             ListPrice: s.commertialOffer?.ListPrice ?? 0,
+            // Price/ListPrice come WITHOUT IVA; exempt items (medicines, food) have 0
+            taxPercentage: s.commertialOffer?.taxPercentage ?? 0,
           },
         })),
       })),
